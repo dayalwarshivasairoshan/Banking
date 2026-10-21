@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bank Account Management System</title>
+<style>
+:root{--bg:#fafaf7;--card:#fff;--text:#1f1f1c;--muted:#66655f;--line:#dedcd3;--accent:#185fa5;--accent-bg:#e6f1fb;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#1c1c1a;--card:#262624;--text:#ecebe4;--muted:#a3a198;--line:#3d3d39;--accent:#85b7eb;--accent-bg:#0c447c;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:32px 20px 56px}
+h1{font-size:30px;line-height:1.25;margin:0 0 6px}
+h2{font-size:21px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)}
+p{margin:0 0 12px}
+.sub{color:var(--muted);margin-bottom:20px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.tag{background:var(--accent-bg);color:var(--accent);padding:3px 11px;border-radius:99px;font-size:13px}
+ul,ol{margin:0 0 12px;padding-left:22px}
+li{margin-bottom:5px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:500;font-size:13px}
+.layers{display:flex;flex-direction:column;gap:8px;max-width:420px}
+.layer{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+.layer b{display:block;font-weight:500}
+.layer span{color:var(--muted);font-size:14px}
+.layer+.layer::before{content:"↓";display:block;text-align:center;color:var(--muted);margin:-6px 0 4px}
+.tree{display:grid;gap:8px;font-size:14px}
+.node{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.node b{font-weight:500}
+.node small{display:block;color:var(--muted)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em}
+@media (max-width:560px){.row2{grid-template-columns:1fr}h1{font-size:25px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="tags"><span class="tag">Java</span><span class="tag">OOP</span><span class="tag">Swing</span><span class="tag">Collections</span></div>
+<h1>Bank Account Management System</h1>
+<p class="sub">A Java project demonstrating inheritance, method overriding, abstract classes, interfaces, collections, exception handling and Swing.</p>
+
+<h2>Summary</h2>
+<p><b>Problem:</b> different account types follow different rules, so treating every account the same breaks down. Savings accounts need a minimum balance and earn interest, while current accounts allow an overdraft and earn none.</p>
+<p><b>Method:</b> the system uses an interface (<code>Transactable</code>), an abstract class (<code>Account</code>) and two subclasses that override withdrawal and interest rules. A <code>Bank</code> class stores accounts in a <code>LinkedHashMap</code>, custom exceptions handle errors, and a Swing GUI provides the interface.</p>
+<p><b>Outcome:</b> headless testing confirmed correct deposits, withdrawals, transfers, interest and history, with invalid operations rejected by clear messages.</p>
+
+<h2>Background</h2>
+<p>Banking is a classic domain for teaching object-oriented programming because accounts share structure but differ in rules. Abstraction captures the common parts, inheritance reuses them, polymorphism lets each type apply its own behaviour, and encapsulation protects the balance.</p>
+<p>Banking software must also fail safely. Overdrawing, entering negative amounts or searching for a missing account should never crash the program, so Java exception handling reports each case clearly.</p>
+
+<h2>Objectives</h2>
+<ol>
+<li>Model account types with an abstract class and inheritance.</li>
+<li>Define the transaction contract with an interface.</li>
+<li>Apply method overriding for type-specific withdrawal and interest rules.</li>
+<li>Store accounts and history in Java Collections.</li>
+<li>Handle errors with custom exceptions and try/catch.</li>
+<li>Provide a Swing GUI for all operations.</li>
+<li>Test both valid and invalid operations.</li>
+</ol>
+
+<h2>Tools and technologies</h2>
+<div class="scroll"><table>
+<tr><th>Category</th><th>Technology</th><th>Purpose</th></tr>
+<tr><td>Language</td><td>Java (JDK 17+)</td><td>Core implementation</td></tr>
+<tr><td>OOP</td><td>Abstract class, interface, inheritance, overriding</td><td>Modelling accounts and rules</td></tr>
+<tr><td>Data structures</td><td><code>LinkedHashMap</code>, <code>ArrayList</code></td><td>Accounts and history</td></tr>
+<tr><td>Errors</td><td>Custom checked exceptions</td><td>Safe handling of invalid input</td></tr>
+<tr><td>GUI</td><td>Swing</td><td>Desktop interface</td></tr>
+<tr><td>Tooling</td><td>VS Code, <code>javac</code>, <code>java</code></td><td>Write, compile, run</td></tr>
+</table></div>
+
+<h2>System design</h2>
+<div class="row2">
+  <div>
+    <p>Layered architecture</p>
+    <div class="layers">
+      <div class="layer"><b>Presentation layer</b><span>Swing GUI and dialogs</span></div>
+      <div class="layer"><b>Business layer</b><span>Bank: create, find, transfer</span></div>
+      <div class="layer"><b>Domain layer</b><span>Account, Savings, Current</span></div>
+      <div class="layer"><b>Storage layer</b><span>LinkedHashMap, ArrayList</span></div>
+    </div>
+  </div>
+  <div>
+    <p>Class hierarchy</p>
+    <div class="tree">
+      <div class="node"><b>Transactable</b> (interface)<small>deposit(), withdraw()</small></div>
+      <div class="node"><b>Account</b> (abstract), implements Transactable<small>withdraw(), calculateInterest()</small></div>
+      <div class="row2">
+        <div class="node"><b>SavingsAccount</b><small>min balance 500, 4% interest</small></div>
+        <div class="node"><b>CurrentAccount</b><small>overdraft 5000, no interest</small></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2>Outcome</h2>
+<p>The project shows how inheritance, overriding, abstraction, collections and exception handling work together in a realistic application. It can be extended with file or database storage, user login and richer reports.</p>
+
+</div>
+</body>
+</html>
