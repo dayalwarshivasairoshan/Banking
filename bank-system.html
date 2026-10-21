@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bank Account Management System</title>
+<style>
+:root{--bg:#fafaf7;--card:#fff;--text:#1f1f1c;--muted:#66655f;--line:#dedcd3;--accent:#185fa5;--accent-bg:#e6f1fb;--ok:#3b6d11;--ok-bg:#eaf3de;--err:#a32d2d;--err-bg:#fcebeb;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1c1a;--card:#262624;--text:#ecebe4;--muted:#a3a198;--line:#3d3d39;--accent:#85b7eb;--accent-bg:#0c447c;--ok:#c0dd97;--ok-bg:#27500a;--err:#f7c1c1;--err-bg:#791f1f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1c1c1a;--card:#262624;--text:#ecebe4;--muted:#a3a198;--line:#3d3d39;--accent:#85b7eb;--accent-bg:#0c447c;--ok:#c0dd97;--ok-bg:#27500a;--err:#f7c1c1;--err-bg:#791f1f;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:32px 20px 56px}
+h1{font-size:30px;line-height:1.25;margin:0 0 6px}
+h2{font-size:21px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)}
+p{margin:0 0 12px}.sub{color:var(--muted);margin-bottom:20px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.tag{background:var(--accent-bg);color:var(--accent);padding:3px 11px;border-radius:99px;font-size:13px}
+ul,ol{margin:0 0 12px;padding-left:22px}li{margin-bottom:5px}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:500;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.layers{display:flex;flex-direction:column;gap:8px;max-width:420px}
+.layer{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
+.layer b{display:block;font-weight:500}.layer span{color:var(--muted);font-size:14px}
+.layer+.layer::before{content:"↓";display:block;text-align:center;color:var(--muted);margin:-6px 0 4px}
+.tree{display:grid;gap:8px;font-size:14px}
+.node{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.node b{font-weight:500}.node small{display:block;color:var(--muted)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+label{display:block;font-size:13px;color:var(--muted);margin-bottom:3px}
+input,select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit;font-size:15px}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+button{padding:8px 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--text);font:inherit;font-size:15px;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary{color:#042c53}}
+button:hover{border-color:var(--accent)}
+#msg{min-height:44px;padding:10px 12px;border-radius:8px;font-size:14px;margin-bottom:12px;background:var(--accent-bg);color:var(--accent);white-space:pre-line}
+#msg.ok{background:var(--ok-bg);color:var(--ok)}#msg.err{background:var(--err-bg);color:var(--err)}
+pre{margin:12px 0 0;padding:12px;background:var(--bg);border:1px solid var(--line);border-radius:8px;font-size:13px;overflow-x:auto;min-height:48px}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.92em}
+@media (max-width:560px){.row2{grid-template-columns:1fr}h1{font-size:25px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="tags"><span class="tag">Java</span><span class="tag">OOP</span><span class="tag">Swing</span><span class="tag">Collections</span></div>
+<h1>Bank Account Management System</h1>
+<p class="sub">A Java project demonstrating inheritance, method overriding, abstract classes, interfaces, collections, exception handling and Swing.</p>
+
+<h2>Summary</h2>
+<p><b>Problem:</b> different account types follow different rules, so treating every account the same breaks down. Savings accounts need a minimum balance and earn interest, while current accounts allow an overdraft and earn none.</p>
+<p><b>Method:</b> the system uses an interface (<code>Transactable</code>), an abstract class (<code>Account</code>) and two subclasses that override withdrawal and interest rules. A <code>Bank</code> class stores accounts in a <code>LinkedHashMap</code>, custom exceptions handle errors, and a Swing GUI provides the interface.</p>
+<p><b>Outcome:</b> headless testing confirmed correct deposits, withdrawals, transfers, interest and history, with invalid operations rejected by clear messages.</p>
+
+<h2>Background</h2>
+<p>Banking is a classic domain for teaching object-oriented programming because accounts share structure but differ in rules. Abstraction captures the common parts, inheritance reuses them, polymorphism lets each type apply its own behaviour, and encapsulation protects the balance.</p>
+<p>Banking software must also fail safely. Overdrawing, entering negative amounts or searching for a missing account should never crash the program, so Java exception handling reports each case clearly.</p>
+
+<h2>Objectives</h2>
+<ol>
+<li>Model account types with an abstract class and inheritance.</li>
+<li>Define the transaction contract with an interface.</li>
+<li>Apply method overriding for type-specific withdrawal and interest rules.</li>
+<li>Store accounts and history in Java Collections.</li>
+<li>Handle errors with custom exceptions and try/catch.</li>
+<li>Provide a Swing GUI for all operations.</li>
+<li>Test both valid and invalid operations.</li>
+</ol>
+
+<h2>Tools and technologies</h2>
+<div class="scroll"><table>
+<tr><th>Category</th><th>Technology</th><th>Purpose</th></tr>
+<tr><td>Language</td><td>Java (JDK 17+)</td><td>Core implementation</td></tr>
+<tr><td>OOP</td><td>Abstract class, interface, inheritance, overriding</td><td>Modelling accounts and rules</td></tr>
+<tr><td>Data structures</td><td><code>LinkedHashMap</code>, <code>ArrayList</code></td><td>Accounts and history</td></tr>
+<tr><td>Errors</td><td>Custom checked exceptions</td><td>Safe handling of invalid input</td></tr>
+<tr><td>GUI</td><td>Swing</td><td>Desktop interface</td></tr>
+<tr><td>Tooling</td><td>VS Code, <code>javac</code>, <code>java</code></td><td>Write, compile, run</td></tr>
+</table></div>
+
+<h2>System design</h2>
+<div class="row2">
+<div>
+<p>Layered architecture</p>
+<div class="layers">
+<div class="layer"><b>Presentation layer</b><span>Swing GUI and dialogs</span></div>
+<div class="layer"><b>Business layer</b><span>Bank: create, find, transfer</span></div>
+<div class="layer"><b>Domain layer</b><span>Account, Savings, Current</span></div>
+<div class="layer"><b>Storage layer</b><span>LinkedHashMap, ArrayList</span></div>
+</div>
+</div>
+<div>
+<p>Class hierarchy</p>
+<div class="tree">
+<div class="node"><b>Transactable</b> (interface)<small>deposit(), withdraw()</small></div>
+<div class="node"><b>Account</b> (abstract), implements Transactable<small>withdraw(), calculateInterest()</small></div>
+<div class="row2">
+<div class="node"><b>SavingsAccount</b><small>min balance 500, 4% interest</small></div>
+<div class="node"><b>CurrentAccount</b><small>overdraft 5000, no interest</small></div>
+</div>
+</div>
+</div>
+</div>
+
+<h2>Live demo</h2>
+<p>This browser version mirrors the Java logic. Create an account, click a row to select it, then try deposits, withdrawals, transfers and invalid inputs.</p>
+<div class="card">
+<div class="grid">
+<div><label for="nm">Holder name</label><input id="nm" placeholder="e.g. Asha"></div>
+<div><label for="ty">Type</label><select id="ty"><option>Savings</option><option>Current</option></select></div>
+<div><label for="ini">Initial deposit</label><input id="ini" type="number" min="0" placeholder="e.g. 2000"></div>
+</div>
+<button class="primary" id="create">Create account</button>
+<div class="grid" style="margin-top:16px">
+<div><label for="acc">Account number</label><input id="acc" placeholder="ACC1001"></div>
+<div><label for="amt">Amount</label><input id="amt" type="number" placeholder="e.g. 500"></div>
+<div><label for="to">Transfer to</label><input id="to" placeholder="ACC1002"></div>
+</div>
+<div class="btns">
+<button id="dep">Deposit</button><button id="wd">Withdraw</button><button id="tr">Transfer</button><button id="int">Apply interest</button><button id="his">History</button>
+</div>
+<div id="msg">Create an account to begin.</div>
+<div class="scroll"><table>
+<thead><tr><th>Account</th><th>Holder</th><th>Type</th><th>Balance</th></tr></thead>
+<tbody id="rows"></tbody>
+</table></div>
+<pre id="hist">Transaction history appears here.</pre>
+</div>
+
+<h2>Outcome</h2>
+<p>The project shows how inheritance, overriding, abstraction, collections and exception handling work together in a realistic application. It can be extended with file or database storage, user login and richer reports.</p>
+</div>
+
+<script>
+class InsufficientFunds extends Error {}
+class InvalidAmount extends Error {}
+class NotFound extends Error {}
+
+class Account {
+  constructor(no, name, bal) { this.no = no; this.name = name; this.balance = bal; this.history = []; this.log("Opening", bal); }
+  log(t, a) { this.history.push(t.padEnd(10) + a.toFixed(2).padStart(12) + "   | Balance: " + this.balance.toFixed(2)); }
+  deposit(a) {
+    if (!(a > 0)) throw new InvalidAmount("Deposit amount must be greater than zero.");
+    this.balance += a; this.log("Deposit", a);
+  }
+  applyInterest() { const i = this.calculateInterest(); if (i > 0) { this.balance += i; this.log("Interest", i); } return i; }
+}
+class Savings extends Account {
+  get type() { return "Savings"; }
+  withdraw(a) {
+    if (!(a > 0)) throw new InvalidAmount("Withdrawal amount must be greater than zero.");
+    if (this.balance - a < 500) throw new InsufficientFunds("Savings must keep a minimum balance of 500.\nAvailable to withdraw: " + Math.max(0, this.balance - 500).toFixed(2));
+    this.balance -= a; this.log("Withdraw", a);
+  }
+  calculateInterest() { return this.balance * 0.04; }
+}
+class Current extends Account {
+  get type() { return "Current"; }
+  withdraw(a) {
+    if (!(a > 0)) throw new InvalidAmount("Withdrawal amount must be greater than zero.");
+    if (this.balance + 5000 < a) throw new InsufficientFunds("Overdraft limit of 5000 exceeded.");
+    this.balance -= a; this.log("Withdraw", a);
+  }
+  calculateInterest() { return 0; }
+}
+class Bank {
+  constructor() { this.accounts = new Map(); this.next = 1001; }
+  create(type, name, initial) {
+    if (!name.trim()) throw new InvalidAmount("Account holder name cannot be empty.");
+    if (!(initial >= 0)) throw new InvalidAmount("Initial deposit must be a number, zero or more.");
+    if (type === "Savings" && initial < 500) throw new InvalidAmount("Savings account needs at least 500 to open.");
+    const no = "ACC" + this.next++;
+    const acc = type === "Savings" ? new Savings(no, name.trim(), initial) : new Current(no, name.trim(), initial);
+    this.accounts.set(no, acc); return acc;
+  }
+  find(no) {
+    const a = this.accounts.get(no.trim().toUpperCase());
+    if (!a) throw new NotFound("No account found with number: " + no);
+    return a;
+  }
+  transfer(f, t, amt) {
+    const from = this.find(f), to = this.find(t);
+    if (from === to) throw new InvalidAmount("Cannot transfer to the same account.");
+    from.withdraw(amt); to.deposit(amt);
+  }
+}
+
+const bank = new Bank();
+const $ = id => document.getElementById(id);
+const say = (t, k) => { const m = $("msg"); m.textContent = t; m.className = k || ""; };
+const amount = () => { const v = parseFloat($("amt").value); if (isNaN(v)) throw new InvalidAmount("Please enter a valid amount."); return v; };
+
+function render() {
+  const body = $("rows"); body.textContent = "";
+  for (const a of bank.accounts.values()) {
+    const tr = document.createElement("tr");
+    tr.style.cursor = "pointer";
+    [a.no, a.name, a.type, a.balance.toFixed(2)].forEach(v => { const td = document.createElement("td"); td.textContent = v; tr.appendChild(td); });
+    tr.onclick = () => { $("acc").value = a.no; };
+    body.appendChild(tr);
+  }
+}
+function run(fn) {
+  try { fn(); render(); }
+  catch (e) {
+    if (e instanceof InvalidAmount || e instanceof InsufficientFunds || e instanceof NotFound) say(e.constructor.name + ": " + e.message, "err");
+    else throw e;
+  }
+}
+
+$("create").onclick = () => run(() => {
+  const a = bank.create($("ty").value, $("nm").value, parseFloat($("ini").value));
+  say("Account created. Account number: " + a.no, "ok");
+  $("acc").value = a.no; $("nm").value = ""; $("ini").value = "";
+});
+$("dep").onclick = () => run(() => { const a = bank.find($("acc").value); a.deposit(amount()); say("Deposit successful. New balance: " + a.balance.toFixed(2), "ok"); });
+$("wd").onclick = () => run(() => { const a = bank.find($("acc").value); a.withdraw(amount()); say("Withdrawal successful. New balance: " + a.balance.toFixed(2), "ok"); });
+$("tr").onclick = () => run(() => { bank.transfer($("acc").value, $("to").value, amount()); say("Transfer successful.", "ok"); });
+$("int").onclick = () => run(() => { const a = bank.find($("acc").value); const i = a.applyInterest(); say(a.type + " account interest added: " + i.toFixed(2), "ok"); });
+$("his").onclick = () => run(() => { const a = bank.find($("acc").value); $("hist").textContent = a.no + " (" + a.type + ", " + a.name + ")\n\n" + a.history.join("\n"); say("Showing history for " + a.no + ".", ""); });
+</script>
+</body>
+</html>
